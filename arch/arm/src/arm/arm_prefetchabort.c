@@ -65,6 +65,7 @@
 
 void arm_prefetchabort(uint32_t *regs)
 {
+  struct tcb_s *tcb = this_task();
 #ifdef CONFIG_LEGACY_PAGING
   uint32_t *savestate;
 
@@ -75,6 +76,7 @@ void arm_prefetchabort(uint32_t *regs)
   savestate = up_current_regs();
 #endif
   up_set_current_regs(regs);
+  tcb->xcp.regs = regs;
 
 #ifdef CONFIG_LEGACY_PAGING
   /* Get the (virtual) address of instruction that caused the prefetch
@@ -97,7 +99,6 @@ void arm_prefetchabort(uint32_t *regs)
        * paging logic for both prefetch and data aborts.
        */
 
-      struct tcb_s *tcb = this_task();
       tcb->xcp.far  = regs[REG_R15];
 
       /* Call pg_miss() to schedule the page fill.  A consequences of this

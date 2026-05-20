@@ -54,6 +54,7 @@
 
 uint32_t *arm_prefetchabort(uint32_t *regs, uint32_t ifar, uint32_t ifsr)
 {
+  struct tcb_s *tcb = this_task();
   uint32_t *savestate;
 
   /* Save the saved processor context in current_regs where it can be
@@ -62,6 +63,7 @@ uint32_t *arm_prefetchabort(uint32_t *regs, uint32_t ifar, uint32_t ifsr)
 
   savestate = up_current_regs();
   up_set_current_regs(regs);
+  tcb->xcp.regs = regs;
 
   /* Get the (virtual) address of instruction that caused the prefetch
    * abort. When the exception occurred, this address was provided in the
@@ -83,7 +85,6 @@ uint32_t *arm_prefetchabort(uint32_t *regs, uint32_t ifar, uint32_t ifsr)
        * paging logic for both prefetch and data aborts.
        */
 
-      struct tcb_s *tcb = this_task();
       tcb->xcp.far  = regs[REG_R15];
 
       /* Call pg_miss() to schedule the page fill.  A consequences of this
@@ -121,11 +122,14 @@ uint32_t *arm_prefetchabort(uint32_t *regs, uint32_t ifar, uint32_t ifsr)
 
 uint32_t *arm_prefetchabort(uint32_t *regs, uint32_t ifar, uint32_t ifsr)
 {
+  struct tcb_s *tcb = this_task();
+
   /* Save the saved processor context in current_regs where it can be
    * accessed for register dumps and possibly context switching.
    */
 
   up_set_current_regs(regs);
+  tcb->xcp.regs = regs;
 
   /* Crash -- possibly showing diagnostic debug information. */
 

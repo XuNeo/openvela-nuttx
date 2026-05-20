@@ -76,6 +76,7 @@ uint32_t *arm_dataabort(uint32_t *regs, uint32_t dfar, uint32_t dfsr)
 
   savestate = up_current_regs();
   up_set_current_regs(regs);
+  tcb->xcp.regs = regs;
 
   /* In the NuttX on-demand paging implementation, only the read-only, .text
    * section is paged.  However, the ARM compiler generated PC-relative data
@@ -148,11 +149,14 @@ segfault:
 
 uint32_t *arm_dataabort(uint32_t *regs, uint32_t dfar, uint32_t dfsr)
 {
+  struct tcb_s *tcb = this_task();
+
   /* Save the saved processor context in current_regs where it can be
    * accessed for register dumps and possibly context switching.
    */
 
   up_set_current_regs(regs);
+  tcb->xcp.regs = regs;
 
   /* Crash -- possibly showing diagnostic debug information. */
 
