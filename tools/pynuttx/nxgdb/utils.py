@@ -796,8 +796,15 @@ except ModuleNotFoundError:
 
 
 def read_uint(addr):
+    """Read a 32-bit unsigned integer from target memory"""
     buf = gdb.selected_inferior().read_memory(addr, 4)
     return int.from_bytes(buf, "little", signed=False)
+
+
+def write_uint(addr, value):
+    """Write a 32-bit unsigned integer to target memory"""
+    data = int(value).to_bytes(4, byteorder="little", signed=False)
+    gdb.selected_inferior().write_memory(addr, data)
 
 
 def read_ulong(buffer, offset):

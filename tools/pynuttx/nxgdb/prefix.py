@@ -56,3 +56,10 @@ class GDBRpcPrefix(gdb.Command):
 
     def __init__(self):
         super().__init__("gdbrpc", gdb.COMMAND_USER, prefix=True)
+
+
+class MPUPrefix(gdb.Command):
+    """MPU inspection commands prefix."""
+
+    def __init__(self):
+        super().__init__("mpu", gdb.COMMAND_USER, prefix=True)
